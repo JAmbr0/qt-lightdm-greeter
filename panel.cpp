@@ -4,6 +4,10 @@
 
 #include <QTimer>
 #include <QDateTime>
+#include <QFile>
+#include <QTextStream>
+#include <QIcon>
+#include <QDebug>
 
 
 Panel::Panel(QWidget *parent) :
@@ -37,7 +41,12 @@ Panel::Panel(QWidget *parent) :
 
     // Start timer with a 1-second interval and update at startup
     timer->start(1000);
-    ui->currentDateTime->setText(QDateTime::currentDateTime().toString("ddd, dd-MM-yyyy hh:mm"));
+    ui->currentDateTime->setText(QDateTime::currentDateTime().toString("dddd, dd-MM-yyyy hh:mm"));
+
+    // Setup battery status updater
+    batteryUpdateTimer = new QTimer(this);
+    connect(batteryUpdateTimer, &QTimer::timeout, this, &Panel::updateBatteryStatus);
+    updateBatteryStatus();
 }
 
 Panel::~Panel()
@@ -65,4 +74,21 @@ void Panel::onLeaveComboBoxActivated(int index) {
     else if (actionName == "restart") emit requestRestart();
     else if (actionName == "hibernate") emit requestHibernate();
     else if (actionName == "suspend") emit requestSuspend();
+}
+
+void Panel::updateBatteryStatus()
+{
+    QString batteryStatus;
+
+    QFile file("/sys/class/power_supply/BAT1/capacity");
+    if (file.open(QIODevice::ReadOnly)) {
+        QTextStream in (&file);
+        QString capacity = in.readLine();
+        batteryStatus = tr("Battery: %1%").arg(capacity);
+        file.close();
+    }
+    else {
+        batteryStatus = tr("Battery Status Unavailable");
+    }
+    ui->batteryStatus->setText(batteryStatus);
 }

@@ -1,12 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "loginform.h"
-#include "panel.h"
-
-#include <QLightDM/Greeter>
-
 #include <QWidget>
+
+class LoginForm;
+class Panel;
 
 namespace Ui{
 class MainWindow;

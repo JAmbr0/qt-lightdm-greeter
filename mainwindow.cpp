@@ -4,9 +4,14 @@
 #include "settings.h"
 
 #include <QRect>
+#include <QGuiApplication>
+#include <QScreen>
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QPalette>
+#include <QSettings>
+#include <QImage>
+#include <QBrush>
 #include <QString>
 #include <QDebug>
 #include <QVBoxLayout>
@@ -21,7 +26,13 @@ MainWindow::MainWindow(int screen, QWidget *parent) :
     m_Panel(nullptr)
 {
     setObjectName(QString("MainWindow_%1").arg(screen));
-    QRect screenRect = QApplication::desktop()->screenGeometry(screen);
+    const QList<QScreen *> screens = QGuiApplication::screens();
+    if (screen < 0 || screen >= screens.size()) {
+        qWarning() << "Invalid screen index:" << screen;
+        return;
+    }
+
+    QRect screenRect = screens.at(screen)->geometry();
     setGeometry(screenRect);
     setBackground();
 
@@ -89,7 +100,15 @@ MainWindow::~MainWindow() {}
 
 bool MainWindow::showLoginForm()
 {
-    return m_Screen == QApplication::desktop()->primaryScreen();
+    QScreen *primaryScreen = QGuiApplication::primaryScreen();
+    const QList<QScreen *> screens = QGuiApplication::screens();
+
+    if (m_Screen >= 0 && m_Screen < screens.size()) {
+        return screens.at(m_Screen) == primaryScreen;
+    }
+
+    qWarning() << "Invalid screen index:" << m_Screen;
+    return false;
 }
 
 void MainWindow::setFocus(Qt::FocusReason reason)
@@ -117,10 +136,16 @@ void MainWindow::setBackground()
     }
 
     QPalette palette;
-    QRect rect = QApplication::desktop()->screenGeometry(m_Screen);
+    const QList<QScreen *> screens = QGuiApplication::screens();
+    if (m_Screen < 0 || m_Screen >= screens.size()) {
+        qWarning() << "Invalid screen index:" << m_Screen;
+        return;
+    }
+
+    QRect rect = screens.at(m_Screen)->geometry();
 
     if (backgroundImage.isNull()) {
-        palette.setColor(QPalette::Background, Qt::white);
+        palette.setColor(QPalette::Window, Qt::white);
     }
     else {
         QBrush brush(backgroundImage.scaled(rect.width(), rect.height()));

@@ -4,11 +4,8 @@
 #include <QLightDM/Greeter>
 
 #include <QWidget>
-#include <QProcess>
-#include <QDialog>
 #include <QKeyEvent>
-#include <QGraphicsOpacityEffect>
-#include <QMap>
+
 
 
 class Panel;
@@ -27,6 +24,7 @@ friend class DecoratedUsersModel;
 public:
     explicit LoginForm(QWidget *parent = nullptr);
     ~LoginForm();
+
     virtual void setFocus(Qt::FocusReason reason);
 
     void setPanel(Panel *panel) { m_Panel = panel; }

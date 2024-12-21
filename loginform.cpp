@@ -7,15 +7,8 @@
 
 #include <QDebug>
 #include <QCompleter>
-#include <QAbstractListModel>
-#include <QFile>
-#include <QTextStream>
 #include <QStringList>
-#include <QPixmap>
 #include <QMessageBox>
-#include <QMenu>
-#include <QProcess>
-#include <QMetaMethod>
 
 
 LoginForm::LoginForm(QWidget *parent) :
@@ -30,7 +23,7 @@ LoginForm::LoginForm(QWidget *parent) :
 
     ui->setupUi(this);
 
-    connect(ui->loginButton, SIGNAL(clicked()), this, SLOT(respond()));
+    connect(ui->loginButton, &QPushButton::clicked, this, &LoginForm::respond);
 
     initialize();
 }
@@ -54,9 +47,9 @@ void LoginForm::initialize()
 {
     ui->hostnameLabel->setText(m_Greeter.hostname());
 
-    connect(ui->userInput, SIGNAL(editingFinished()), this, SLOT(userChanged()));
-    connect(&m_Greeter, SIGNAL(showPrompt(QString, QLightDM::Greeter::PromptType)), this, SLOT(onPrompt(QString, QLightDM::Greeter::PromptType)));
-    connect(&m_Greeter, SIGNAL(authenticationComplete()), this, SLOT(authenticationComplete()));
+    connect(ui->userInput, &QLineEdit::editingFinished, this, &LoginForm::userChanged);
+    connect(&m_Greeter, &QLightDM::Greeter::showPrompt, this, &LoginForm::onPrompt);
+    connect(&m_Greeter, &QLightDM::Greeter::authenticationComplete, this, &LoginForm::authenticationComplete);
 
     ui->passwordInput->setEnabled(false);
     ui->passwordInput->clear();

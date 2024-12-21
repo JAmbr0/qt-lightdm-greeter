@@ -5,6 +5,7 @@
 #include <QLightDM/Power>
 
 #include <QWidget>
+#include <QTimer>
 
 
 namespace Ui {
@@ -32,6 +33,10 @@ signals:
 
 private:
     void addLeaveEntry(bool canDo, const QString &iconName, const QString &text, const QString &actionName);
+
+    QTimer *batteryUpdateTimer;
+
+    void updateBatteryStatus();
 
     Ui::Panel *ui;
     QLightDM::SessionsModel sessionsModel;
